@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🌤️ Weather Pulse</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right top, #1e3c72, #2a5298);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .app-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      flex: 1;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1f6391;
+    }
+
+    #weatherBox {
+      margin-top: 1.5rem;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    #weatherBox p {
+      margin: 0.6rem 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1>🌤️ Weather Pulse</h1>
+    <form id="weatherForm">
+      <input type="text" id="cityInput" placeholder="Enter city name..." required>
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="weatherBox" class="hidden">
+      <h2 id="locationName"></h2>
+      <p id="description"></p>
+      <p id="temperature"></p>
+      <p id="humidity"></p>
+      <p id="wind"></p>
+    </div>
+  </div>
+
+  <footer>💻 Made By Dhyey</footer>
+
+  <script>
+    const form = document.getElementById('weatherForm');
+    const cityInput = document.getElementById('cityInput');
+    const weatherBox = document.getElementById('weatherBox');
+    const locationName = document.getElementById('locationName');
+    const description = document.getElementById('description');
+    const temperature = document.getElementById('temperature');
+    const humidity = document.getElementById('humidity');
+    const wind = document.getElementById('wind');
+  
+    const apiKey = '49706138-e91ba5dc1dc6ed04e302dda3d';
+  
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const city = cityInput.value.trim();
+      if (city) {
+        console.log("Searching city:", city);
+        fetchWeatherByCity(city);
+      }
+    });
+  
+    function fetchWeatherByCity(city) {
+      const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+      console.log("Requesting URL:", url);
+      getWeatherData(url);
+    }
+  
+    function getWeatherData(url) {
+      fetch(url)
+        .then(res => {
+          console.log("Raw response:", res);
+          if (!res.ok) throw new Error("City not found");
+          return res.json();
+        })
+        .then(data => {
+          console.log("Weather data received:", data);
+          updateUI(data);
+        })
+        .catch(err => {
+          console.error("Error occurred:", err);
+          alert(err.message);
+        });
+    }
+  
+    function updateUI(data) {
+      locationName.textContent = `${data.location.name}, ${data.location.country}`;
+      description.textContent = `🌥️ ${data.current.condition.text}`;
+      temperature.textContent = `🌡️ ${data.current.temp_c}°C`;
+      humidity.textContent = `💧 Humidity: ${data.current.humidity}%`;
+      wind.textContent = `💨 Wind: ${data.current.wind_kph} km/h`;
+      weatherBox.classList.remove('hidden');
+    }
+  </script>
+  
+</body>
+</html>
